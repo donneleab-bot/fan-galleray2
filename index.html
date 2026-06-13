@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Красивая Галерея</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0d1117; 
+            color: #c9d1d9;
+            padding: 20px;
+        }
+        /* Стили для контейнера поиска */
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            justify-content: center;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-item {
+            position: relative;
+            background: #161b22;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* Класс для скрытия элементов при поиске */
+        .gallery-item.hidden {
+            display: none;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-color: #58a6ff;
+        }
+        .img-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #0d1117;
+            cursor: pointer;
+        }
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover .img-container img {
+            transform: scale(1.05);
+        }
+        .item-info {
+            padding: 15px;
+        }
+        .item-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            color: #f0f6fc;
+        }
+        .author-link {
+            display: inline-block;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .author-link:hover {
+            text-decoration: underline;
+        }
+        .item-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #8b949e;
+            line-height: 1.4;
+        }
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 12, 16, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+        }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 75vh;
+            border-radius: 8px;
+            box-shadow: 0 0 32px rgba(0,0,0,0.5);
+        }
+        .lightbox-caption {
+            margin-top: 15px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .lightbox-caption h3 {
+            margin: 0 0 4px 0;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+        .lightbox-caption a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        .lightbox-caption p {
+            margin: 5px 0 0 0;
+            color: #8b949e;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 35px;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Поле поиска -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <span class="close-btn">&times;</span>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <script>
+        const arts = [
+            {
+                img: "Screenshot_9.png", 
+                title: "Прототип родителей Шарптанг", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8269", 
+                desc: "3 марта 2026 года, 02:14"
+            },
+            {
+                img: "Screenshot_10.png", 
+                title: "Прототип родителей Прауда", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8268", 
+                desc: "3 марта 2026 года, 01:17"
+            },
+            {
+                img: "Screenshot_11.png", 
+                title: "Набросок дизайна матери Мунстрайк", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8265", 
+                desc: "3 марта 2026 года, 00:25"
+            },
+            {
+                img: "Screenshot_13.png", 
+                title: "давно ничего не было с девочками, да и с остальными дамами тот же касяк.. Что-ж, у мальчиков сразу две тёти, одна бабушка и одна прабабушка", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8237", 
+                desc: "#Вотерхантер #Сайленсталк #Лайтхантер, 16 февраля 2026 года, 03:06"
+            },
+           {
+    img: "Screenshot_15.png",
+    title: '"Моя мать рухлядь которая не способна поймать даже муху" сказал бы сын ничто под влиянием Прауда..если бы Ничто не решилась спасти брата.',
+    authorName: "Star Harlen",
+    authorUrl: "https://t.me",
+    desc: "14 февраля 2026 года, 02:17"
+},
+             {
+                img: "Screenshot_16.png", 
+                title: "Если бы...", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8111", 
+                desc: "#Если #Спарк #Файер #Ничто #Перо,14 сентября 2025 года, 07:35"
+            },
+             {
+                img: "Screenshot_17.png", 
+                title: "Последний разговор между Флайт и Танглом...Тангл не хотел оставлять Фаера пока тот не найдет свой прайд, чего не скажешь о поступке второго...", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8070", 
+                desc: "#Тангл #Флайт #Бид,4 августа 2025 года,  20:31"
+            },
+             {
+                img: "Screenshot_18.png", 
+                title: "—он похож на тебя—у него нет ничего от меня, он просто копия его отца.", 
+                authorName: "Mefoday",
+                authorUrl: "https://t.me/My_pride_2/8089", 
+                desc: "Недавний артец для Леди и ее партнёрши(ее ведь так можно называть?) и мини БаркИ скетч с Дримом в ближайшее время дропну тот аск...#Мать_Баркмейна #Леди,25 августа 2025 года, 02:17"
+            },
+            {
+    img: "Screenshot_15.png",
+    title: '"Моя мать рухлядь которая не способна поймать даже муху" сказал бы сын ничто под влиянием Прауда..если бы Ничто не решилась спасти брата.',
+    authorName: "Star Harlen",
+    authorUrl: "https://t.me",
+    desc: "14 февраля 2026 года, 02:17"
+},
+        ];
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const searchInput = document.getElementById('searchInput');
+
+        // Генерируем карточки
+        arts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
+
+        // Логика фильтрации при вводе в поиск
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const items = galleryGrid.getElementsByClassName('gallery-item');
+
+            arts.forEach((art, index) => {
+                const matchTitle = art.title.toLowerCase().includes(query);
+                const matchAuthor = art.authorName.toLowerCase().includes(query);
+                const matchDesc = art.desc.toLowerCase().includes(query);
+
+                if (matchTitle || matchAuthor || matchDesc) {
+                    items[index].classList.remove('hidden');
+                } else {
+                    items[index].classList.add('hidden');
+                }
+            });
+        });
+
+        function openLightbox(index) {
+            const art = arts[index];
+            lightboxImg.src = art.img;
+            lightboxCaption.innerHTML = `
+                <h3>${art.title}</h3>
+                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <p>${art.desc}</p>
+            `;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox(event) {
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
+                lightbox.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
+
