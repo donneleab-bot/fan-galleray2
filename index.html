@@ -107,26 +107,41 @@
             flex: 1;
         }
         .item-info h3 {
-            margin: 0 0 4px 0;
-            font-size: 1.05rem;
+            margin: 0 0 6px 0;
+            font-size: 1rem;
             color: #f0f6fc;
             word-break: break-word;
+            line-height: 1.35;
+            font-weight: 600;
         }
-        .author-link {
-            display: inline-block;
+        .author-line {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #8b949e;
+        }
+        .author-line a {
             color: #58a6ff;
             text-decoration: none;
-            font-size: 0.9rem;
             font-weight: 500;
-            margin-bottom: 8px;
         }
-        .author-link:hover { text-decoration: underline; }
-        .item-info p {
-            margin: 0;
+        .author-line a:hover { text-decoration: underline; }
+        .item-info .desc {
+            margin: 0 0 6px 0;
             font-size: 0.88rem;
-            color: #8b949e;
+            color: #c9d1d9;
             line-height: 1.4;
             word-break: break-word;
+        }
+        .tags-line {
+            margin: 4px 0 0 0;
+            font-size: 0.85rem;
+            color: #58a6ff;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+        .tags-line .tag {
+            display: inline-block;
+            margin-right: 4px;
         }
         .item-meta {
             margin-top: 10px;
@@ -183,7 +198,7 @@
         .lightbox.active { opacity: 1; pointer-events: auto; }
         .lightbox-img {
             max-width: 90%;
-            max-height: 75vh;
+            max-height: 72vh;
             border-radius: 8px;
             box-shadow: 0 0 32px rgba(0,0,0,0.5);
         }
@@ -192,11 +207,32 @@
             text-align: center;
             max-width: 80%;
         }
-        .lightbox-caption h3 { margin: 0 0 4px 0; color: #fff; font-size: 1.25rem; }
-        .lightbox-caption a { color: #58a6ff; text-decoration: none; }
-        .lightbox-caption p { margin: 5px 0 0 0; color: #8b949e; font-size: 0.9rem; }
+        .lightbox-caption h3 {
+            margin: 0 0 6px 0;
+            color: #fff;
+            font-size: 1.15rem;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+        .lightbox-caption .author-line {
+            font-size: 0.95rem;
+            color: #8b949e;
+        }
+        .lightbox-caption .author-line a { color: #58a6ff; text-decoration: none; }
+        .lightbox-caption .author-line a:hover { text-decoration: underline; }
+        .lightbox-caption .desc {
+            margin: 8px 0 0 0;
+            color: #c9d1d9;
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+        .lightbox-caption .tags-line {
+            margin: 8px 0 0 0;
+            color: #58a6ff;
+            font-size: 0.88rem;
+        }
         .lightbox-caption .lightbox-meta {
-            margin-top: 8px;
+            margin-top: 10px;
             font-size: 0.85rem;
             color: #6e7681;
         }
@@ -238,7 +274,7 @@
 <body>
 
     <div class="controls">
-        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору, тегам или дате...">
         <select id="sortSelect" class="sort-select">
             <option value="newest">Сначала новые</option>
             <option value="oldest">Сначала старые</option>
@@ -262,14 +298,16 @@
          *  КОНФИГУРАЦИЯ — ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА СВОИ
          * ========================================================= */
         const CONFIG = {
-            owner: "your-github-username",   // ваш логин на GitHub
-            repo: "your-repo-name",          // имя репозитория
-            folder: "arts",                  // папка внутри репо ("" — если в корне)
-            branch: "main",                  // ветка
-            // Personal Access Token (read-only).
-            // Создать: https://github.com/settings/tokens (scope: public_repo)
-            // Без токена лимит 60 запросов/час — не хватит для галереи.
-            token: "ghp_xxxxxxxxxxxxxxxxxxxx"
+            owner: "your-github-username",
+            repo: "your-repo-name",
+            folder: "arts",                  // папка с картинками
+            branch: "main",
+            token: "ghp_xxxxxxxxxxxxxxxxxxxx",
+
+            // Путь к файлу с ручными метаданными (относительно корня репозитория).
+            // Если файл лежит в корне репо — "arts.json".
+            // Если в папке с картинками — "arts/meta.json".
+            metaFile: "arts.json"
         };
 
         /* =========================================================
@@ -286,7 +324,7 @@
         }
 
         /* =========================================================
-         *  АНАЛИТИКА (поиск, лайки, просмотры)
+         *  АНАЛИТИКА
          * ========================================================= */
         const SEARCH_LOG_KEY = "search_queries";
         function logSearch(query) {
@@ -296,9 +334,6 @@
             log.push({ query: q, timestamp: new Date().toISOString() });
             if (log.length > 500) log.splice(0, log.length - 500);
             lsSet(SEARCH_LOG_KEY, log);
-            if (typeof window.ym === "function") {
-                try { window.ym(XXXXXX, "reachGoal", "search", { query: q }); } catch (e) {}
-            }
         }
 
         const LIKES_KEY = "art_likes";
@@ -329,9 +364,6 @@
             const views = lsGet(VIEWS_KEY, {});
             views[id] = (views[id] || 0) + 1;
             lsSet(VIEWS_KEY, views);
-            if (typeof window.ym === "function") {
-                try { window.ym(XXXXXX, "reachGoal", "art_view", { art_id: id }); } catch (e) {}
-            }
         }
         window.getTopViewed = function () {
             const views = lsGet(VIEWS_KEY, {});
@@ -343,10 +375,8 @@
         window.getSearchLog = function () { return lsGet(SEARCH_LOG_KEY, []); };
 
         /* =========================================================
-         *  GITHUB API — получение дат через коммиты
+         *  GITHUB API
          * ========================================================= */
-
-        // Кэш дат коммитов на 24 часа (даты загрузки файлов не меняются)
         const COMMIT_CACHE_TTL = 24 * 60 * 60 * 1000;
         const COMMIT_CACHE_PREFIX = "gh_commit_date_";
 
@@ -369,7 +399,6 @@
             return h;
         }
 
-        // Счётчик запросов к API (для отладки)
         let apiCallCount = 0;
         window.getApiCallCount = () => apiCallCount;
 
@@ -379,18 +408,15 @@
             if (res.status === 403 || res.status === 429) {
                 const reset = res.headers.get("X-RateLimit-Reset");
                 const resetTime = reset ? new Date(reset * 1000).toLocaleTimeString() : "?";
-                throw new Error(`GitHub API: превышен лимит запросов. Сброс в ${resetTime}. Добавьте токен в CONFIG.`);
+                throw new Error(`GitHub API: лимит запросов. Сброс в ${resetTime}. Проверьте токен.`);
             }
             if (res.status === 404) {
-                throw new Error("GitHub API: не найдено. Проверьте owner/repo/folder/branch в CONFIG.");
+                throw new Error("GitHub API: не найдено. Проверьте owner/repo/folder/branch.");
             }
             if (!res.ok) throw new Error(`GitHub API: ошибка ${res.status}`);
             return res.json();
         }
 
-        /**
-         * Получает список файлов-картинок из папки репозитория.
-         */
         async function fetchRepoFiles() {
             const path = CONFIG.folder ? `/${CONFIG.folder}` : "";
             const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents${path}?ref=${CONFIG.branch}`;
@@ -403,66 +429,90 @@
         }
 
         /**
-         * Получает дату ПЕРВОГО коммита для файла.
-         * Это и есть дата загрузки картинки в репозиторий.
-         * @param {string} filePath — путь к файлу внутри репо
-         * @returns {Promise<{ date: string, timestamp: number, author: string } | null>}
+         * Загружает файл arts.json с ручными метаданными.
+         * Если файла нет — возвращает пустой объект (ничего не сломается).
+         */
+        async function loadMeta() {
+            if (!CONFIG.metaFile) return {};
+            try {
+                const url = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${CONFIG.metaFile}?t=${Date.now()}`;
+                const res = await fetch(url);
+                if (!res.ok) {
+                    console.warn(`[meta] ${CONFIG.metaFile} не найден (${res.status}), работаю без ручных метаданных.`);
+                    return {};
+                }
+                const data = await res.json();
+                return (data && typeof data === "object") ? data : {};
+            } catch (e) {
+                console.warn("[meta] не удалось загрузить arts.json:", e);
+                return {};
+            }
+        }
+
+        /**
+         * Дата ПЕРВОГО коммита для файла — дата загрузки картинки в репозиторий.
          */
         async function fetchFirstCommitDate(filePath) {
-            // Кэш
             const cached = commitCacheGet(filePath);
             if (cached) return cached;
 
-            // Запрашиваем все коммиты для этого пути, но нам нужен самый старый.
-            // GitHub отдаёт от новых к старым, поэтому берём последний.
-            // per_page=100 — чтобы не делать пагинацию, если коммитов много.
             const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/commits?path=${encodeURIComponent(filePath)}&per_page=100&sha=${CONFIG.branch}`;
             const data = await ghFetch(url);
+            if (!Array.isArray(data) || data.length === 0) return null;
 
-            if (!Array.isArray(data) || data.length === 0) {
-                return null;
-            }
-
-            // Самый старый коммит — последний в массиве
             const oldest = data[data.length - 1];
             const isoDate = oldest.commit?.author?.date
                          || oldest.commit?.committer?.date
                          || null;
-
             if (!isoDate) return null;
 
             const result = {
-                date: isoDate.slice(0, 10),                              // YYYY-MM-DD
-                time: isoDate.slice(11, 16),                             // HH:MM
+                date: isoDate.slice(0, 10),
+                time: isoDate.slice(11, 16),
                 timestamp: new Date(isoDate).getTime(),
                 author: oldest.commit?.author?.name
                      || oldest.author?.login
                      || "Unknown"
             };
-
             commitCacheSet(filePath, result);
             return result;
         }
 
         /**
-         * Строит объект арта из файла.
+         * Строит объект арта: ручные метаданные (из arts.json) + дата из коммита.
          */
-        async function buildArtFromFile(file) {
+        async function buildArtFromFile(file, meta) {
             const commitInfo = await fetchFirstCommitDate(file.path);
+            const m = meta[file.name] || {};   // ключ — имя файла, например "Screenshot_13.png"
 
             const imgUrl = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${file.path}`;
             const sourceUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${file.path}`;
 
-            // Красивое имя: убираем расширение и заменяем подчёркивания/дефисы на пробелы
-            const title = file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+            // Заголовок: ручной → имя файла без расширения
+            const title = (m.title && String(m.title).trim())
+                       || file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+
+            // Автор: ручной → из коммита
+            const author = (m.author && String(m.author).trim())
+                        || commitInfo?.author
+                        || "Unknown";
+
+            // Ссылка автора: ручная → ссылка на файл в GitHub
+            const authorUrl = (m.authorUrl && String(m.authorUrl).trim())
+                           || sourceUrl;
+
+            // Описание и теги — только ручные
+            const desc = (m.desc && String(m.desc).trim()) || "";
+            const tags = (m.tags && String(m.tags).trim()) || "";
 
             return {
                 id: file.path,
                 img: imgUrl,
-                title: title || file.name,
-                authorName: commitInfo?.author || "Unknown",
-                authorUrl: sourceUrl,
-                desc: "",
+                title,
+                authorName: author,
+                authorUrl,
+                desc,
+                tags,
                 date: commitInfo?.date || null,
                 time: commitInfo?.time || "00:00",
                 timestamp: commitInfo?.timestamp || 0,
@@ -506,6 +556,14 @@
                 .replace(/'/g, "&#39;");
         }
 
+        // Разбивает строку тегов "#a #b #c" в HTML-спан
+        function renderTags(tags) {
+            if (!tags) return "";
+            return tags.split(/\s+/).filter(Boolean)
+                .map(t => `<span class="tag">${esc(t)}</span>`)
+                .join(" ");
+        }
+
         function renderGallery() {
             const query = searchInput.value.toLowerCase().trim();
             const sortOrder = sortSelect.value;
@@ -513,13 +571,12 @@
             let filtered = allArts.filter(art => {
                 if (!query) return true;
                 const haystack = [
-                    art.title, art.authorName, art.desc,
+                    art.title, art.authorName, art.desc, art.tags,
                     art.date, art.time, formatDate(art.date)
                 ].join(" ").toLowerCase();
                 return haystack.includes(query);
             });
 
-            // Сортировка по таймстампу
             filtered.sort((a, b) => {
                 const diff = b.timestamp - a.timestamp;
                 return sortOrder === "newest" ? diff : -diff;
@@ -543,8 +600,9 @@
                     </div>
                     <div class="item-info">
                         <h3>${esc(art.title)}</h3>
-                        <a href="${esc(art.authorUrl)}" target="_blank" class="author-link">Источник: ${esc(art.authorName)}</a>
-                        ${art.desc ? `<p>${esc(art.desc)}</p>` : ""}
+                        <div class="author-line">Автор: <a href="${esc(art.authorUrl)}" target="_blank">${esc(art.authorName)}</a></div>
+                        ${art.desc ? `<p class="desc">${esc(art.desc)}</p>` : ""}
+                        ${art.tags ? `<p class="tags-line">${renderTags(art.tags)}</p>` : ""}
                         <div class="item-meta">
                             <span>📅 ${formatDate(art.date)}</span>
                             <span>🕒 ${art.time}</span>
@@ -580,8 +638,9 @@
             lightboxImg.src = art.img;
             lightboxCaption.innerHTML = `
                 <h3>${esc(art.title)}</h3>
-                <a href="${esc(art.authorUrl)}" target="_blank">Источник: ${esc(art.authorName)}</a>
-                ${art.desc ? `<p>${esc(art.desc)}</p>` : ""}
+                <div class="author-line">Автор: <a href="${esc(art.authorUrl)}" target="_blank">${esc(art.authorName)}</a></div>
+                ${art.desc ? `<p class="desc">${esc(art.desc)}</p>` : ""}
+                ${art.tags ? `<p class="tags-line">${renderTags(art.tags)}</p>` : ""}
                 <div class="lightbox-meta">📅 ${formatDate(art.date)} &nbsp;|&nbsp; 🕒 ${art.time}</div>
             `;
             lightbox.classList.add('active');
@@ -597,6 +656,9 @@
          * ========================================================= */
         async function init() {
             try {
+                statusBar.textContent = "Загружаю arts.json...";
+                const meta = await loadMeta();
+
                 statusBar.textContent = "Получаю список файлов из GitHub...";
                 const files = await fetchRepoFiles();
 
@@ -608,20 +670,18 @@
 
                 statusBar.textContent = `Найдено файлов: ${files.length}. Загружаю даты коммитов...`;
 
-                // Строим арты последовательно (чтобы не спамить API и видеть прогресс)
                 const arts = [];
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     progress.textContent = `${i + 1} / ${files.length}`;
                     try {
-                        const art = await buildArtFromFile(file);
+                        const art = await buildArtFromFile(file, meta);
                         arts.push(art);
                     } catch (e) {
                         console.warn("[github] не удалось обработать", file.name, e);
                     }
                 }
 
-                // Финальная сортировка по таймстампу — новые сверху
                 arts.sort((a, b) => b.timestamp - a.timestamp);
                 allArts = arts;
 
@@ -637,32 +697,6 @@
         }
 
         init();
-
-        /* =========================================================
-         *  ПОДСКАЗКИ
-         * =========================================================
-         *
-         * 1) Создать Personal Access Token:
-         *    https://github.com/settings/tokens → "Generate new token (classic)"
-         *    → scope: public_repo (или repo, если репозиторий приватный)
-         *    → вставить в CONFIG.token
-         *
-         * 2) Даты берутся из метаданных коммитов:
-         *    - дата загрузки картинки = дата её первого коммита
-         *    - имя файла может быть любым (IMG_1234.png, photo.jpg, ...)
-         *
-         * 3) Кэш дат коммитов — 24 часа в localStorage.
-         *    При повторном заходе пользователя GitHub API не дёргается.
-         *    Чтобы сбросить кэш — очистите localStorage вручную.
-         *
-         * 4) Отладка в консоли:
-         *    getApiCallCount()  — сколько запросов ушло к GitHub API
-         *    getSearchLog()     — все поисковые запросы
-         *    getTopViewed()     — топ просмотренных артов
-         *
-         * 5) Чтобы обновить галерею после добавления новых картинок —
-         *    просто перезагрузите страницу. Новые файлы появятся сверху.
-         */
     </script>
 </body>
 </html>
