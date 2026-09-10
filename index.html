@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0d1117; 
+            background-color: #0d1117;
             color: #c9d1d9;
             padding: 20px;
         }
@@ -51,7 +51,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Класс для скрытия элементов при поиске */
         .gallery-item.hidden {
             display: none;
         }
@@ -158,16 +157,6 @@
 </head>
 <body>
 
-
-
-
-
-
-
-
-
-
-
     <!-- Поле поиска -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
@@ -184,34 +173,34 @@
     <script>
         const arts = [
             {
-                img: "НовыйХолст6фывыф.png", 
-                title: "ааааа", 
-                authorName: "звиздец",
-                authorUrl: "", 
+                img: "Screenshot_9.png",
+                title: "Прототип родителей Шарптанг",
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8269",
                 desc: "3 марта 2026 года, 02:14",
                 sortDate: "2026-03-03"
             },
             {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
+                img: "Screenshot_10.png",
+                title: "Прототип родителей Прауда",
                 authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8268", 
+                authorUrl: "https://t.me/My_pride_2/8268",
                 desc: "3 марта 2026 года, 01:17",
                 sortDate: "2026-03-03"
             },
             {
-                img: "НовыйХолст6фывыф.pn", 
-                title: "Набросок дизайна матери Мунстрайк", 
+                img: "Screenshot_11.png",
+                title: "Набросок дизайна матери Мунстрайк",
                 authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8265", 
+                authorUrl: "https://t.me/My_pride_2/8265",
                 desc: "3 марта 2026 года, 00:25",
-                sortDate: "2025-03-03"
+                sortDate: "2026-03-03"
             },
             {
-                img: "Screenshot_13.png", 
-                title: "давно ничего не было с девочками, да и с остальными дамами тот же касяк.. Что-ж, у мальчиков сразу две тёти, одна бабушка и одна прабабушка", 
+                img: "Screenshot_13.png",
+                title: "давно ничего не было с девочками, да и с остальными дамами тот же касяк.. Что-ж, у мальчиков сразу две тёти, одна бабушка и одна прабабушка",
                 authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8237", 
+                authorUrl: "https://t.me/My_pride_2/8237",
                 desc: "#Вотерхантер #Сайленсталк #Лайтхантер, 16 февраля 2026 года, 03:06",
                 sortDate: "2026-02-16"
             },
@@ -224,26 +213,26 @@
                 sortDate: "2026-02-14"
             },
             {
-                img: "Screenshot_16.png", 
-                title: "Если бы...", 
+                img: "Screenshot_16.png",
+                title: "Если бы...",
                 authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8111", 
+                authorUrl: "https://t.me/My_pride_2/8111",
                 desc: "#Если #Спарк #Файер #Ничто #Перо,14 сентября 2025 года, 07:35",
                 sortDate: "2025-09-14"
             },
             {
-                img: "Screenshot_17.png", 
-                title: "Последний разговор между Флайт и Танглом...Тангл не хотел оставлять Фаера пока тот не найдет свой прайд, чего не скажешь о поступке второго...", 
+                img: "Screenshot_17.png",
+                title: "Последний разговор между Флайт и Танглом...Тангл не хотел оставлять Фаера пока тот не найдет свой прайд, чего не скажешь о поступке второго...",
                 authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8070", 
+                authorUrl: "https://t.me/My_pride_2/8070",
                 desc: "#Тангл #Флайт #Бид,4 августа 2025 года,  20:31",
                 sortDate: "2025-08-04"
             },
             {
-                img: "Screenshot_18.png", 
-                title: "—он похож на тебя—у него нет ничего от меня, он просто копия его отца.", 
+                img: "Screenshot_18.png",
+                title: "—он похож на тебя—у него нет ничего от меня, он просто копия его отца.",
                 authorName: "Mefoday",
-                authorUrl: "https://t.me/My_pride_2/8089", 
+                authorUrl: "https://t.me/My_pride_2/8089",
                 desc: "Недавний артец для Леди и ее партнёрши(ее ведь так можно называть?) и мини БаркИ скетч с Дримом в ближайшее время дропну тот аск...#Мать_Баркмейна #Леди,25 августа 2025 года, 02:17",
                 sortDate: "2025-08-25"
             }
@@ -255,10 +244,10 @@
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
 
-        // === АВТОСОРТИРОВКА ПО ДАТЕ (от новых к старым) ===
+        // АВТОСОРТИРОВКА: от новых к старым. Никаких кнопок и селектов.
         const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
 
-        // Генерируем карточки уже из отсортированного массива
+        // Рендер карточек из уже отсортированного массива
         sortedArts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
@@ -275,7 +264,7 @@
             galleryGrid.appendChild(item);
         });
 
-        // Логика фильтрации при вводе в поиск
+        // Поиск по названию / автору / описанию
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
             const items = galleryGrid.getElementsByClassName('gallery-item');
