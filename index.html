@@ -279,65 +279,73 @@
             if (e.target.tagName === 'IMG') e.preventDefault();
         });
 
-        // === СКАЧИВАНИЕ КАРТИНКИ С ВОДЯНЫМ ЗНАКОМ ЧЕРЕЗ CANVAS ===
-        function downloadWithWatermark(event) {
-            event.stopPropagation();
+// === СКАЧИВАНИЕ КАРТИНКИ С ВОДЯНЫМ ЗНАКОМ ЧЕРЕЗ CANVAS ===
+function downloadWithWatermark(event) {
+    event.stopPropagation();
 
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.src = lightboxImg.src;
+    // Находим текущий арт (по src картинки в лайтбоксе)
+    const currentArt = sortedArts.find(a => lightboxImg.src.includes(a.img)) || sortedArts[0];
 
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.naturalWidth;
-                canvas.height = img.naturalHeight;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = lightboxImg.src;
 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
 
-                const text = '© Star Harlen';
-                const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
-                ctx.font = `bold ${fontSize}px Arial`;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
 
-                // Подпись в правом нижнем углу
-                const padding = Math.round(canvas.width * 0.02);
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'bottom';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
-                ctx.lineWidth = 2;
-                ctx.strokeText(text, canvas.width - padding, canvas.height - padding);
-                ctx.fillText(text, canvas.width - padding, canvas.height - padding);
+        const patternText = 'My Pride Fan';
+        const authorText  = '© ' + currentArt.authorName;
 
-                // Тонкий паттерн по диагонали
+        const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
+        ctx.font = `bold ${fontSize}px Arial`;
+
+        // --- Подпись автора в правом нижнем углу (плотная, белая с чёрной обводкой) ---
+        const padding = Math.round(canvas.width * 0.02);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.lineWidth = 3;
+        ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
+        ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
+
+        // --- Тонкий паттерн по диагонали (чёрный, заметнее чем раньше) ---
+        ctx.save();
+        ctx.globalAlpha = 0.18;             // ← было 0.10, стало заметнее
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `bold ${fontSize}px Arial`;
+
+        const stepX = canvas.width / 3;
+        const stepY = canvas.height / 3;
+
+        for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
                 ctx.save();
-                ctx.globalAlpha = 0.10;
-                ctx.fillStyle = '#000';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                const stepX = canvas.width / 2.5;
-                const stepY = canvas.height / 2.5;
-                for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
-                    for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
-                        ctx.save();
-                        ctx.translate(x, y);
-                        ctx.rotate(-Math.PI / 6);
-                        ctx.fillText(text, 0, 0);
-                        ctx.restore();
-                    }
-                }
+                ctx.translate(x, y);
+                ctx.rotate(-Math.PI / 6);   // -30°
+                ctx.fillText(patternText, 0, 0);
                 ctx.restore();
-
-                const link = document.createElement('a');
-                link.download = 'art_' + Date.now() + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            };
-
-            img.onerror = () => {
-                alert('Не удалось загрузить картинку для скачивания.');
-            };
+            }
         }
+        ctx.restore();
+
+        const link = document.createElement('a');
+        link.download = 'art_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+
+    img.onerror = () => {
+        alert('Не удалось загрузить картинку для скачивания.');
+    };
+}
     </script>
 </body>
 </html>
