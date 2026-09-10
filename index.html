@@ -8,22 +8,19 @@
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0d1117;
+            background-color: #0d1117; 
             color: #c9d1d9;
             padding: 20px;
         }
-        .controls {
+        /* Стили для контейнера поиска */
+        .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
             justify-content: center;
-            align-items: center;
         }
         .search-input {
-            flex: 1;
-            min-width: 220px;
+            width: 100%;
             max-width: 500px;
             padding: 12px 20px;
             font-size: 1rem;
@@ -38,29 +35,6 @@
             border-color: #58a6ff;
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
-        .sort-select {
-            padding: 12px 16px;
-            font-size: 1rem;
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #f0f6fc;
-            outline: none;
-            cursor: pointer;
-        }
-        .sort-select:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
-        }
-        .status-bar {
-            max-width: 1200px;
-            margin: 0 auto 15px auto;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #8b949e;
-            min-height: 1.2em;
-        }
-        .status-bar.error { color: #f85149; }
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -76,10 +50,11 @@
             border: 1px solid #30363d;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
         }
-        .gallery-item.hidden { display: none; }
+        /* Класс для скрытия элементов при поиске */
+        .gallery-item.hidden {
+            display: none;
+        }
         .gallery-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -97,94 +72,41 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
-            display: block;
         }
-        .gallery-item:hover .img-container img { transform: scale(1.05); }
+        .gallery-item:hover .img-container img {
+            transform: scale(1.05);
+        }
         .item-info {
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
         }
         .item-info h3 {
-            margin: 0 0 6px 0;
-            font-size: 1rem;
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
             color: #f0f6fc;
-            word-break: break-word;
-            line-height: 1.35;
-            font-weight: 600;
         }
-        .author-line {
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-            color: #8b949e;
-        }
-        .author-line a {
+        .author-link {
+            display: inline-block;
             color: #58a6ff;
             text-decoration: none;
+            font-size: 0.95rem;
             font-weight: 500;
+            margin-bottom: 8px;
         }
-        .author-line a:hover { text-decoration: underline; }
-        .item-info .desc {
-            margin: 0 0 6px 0;
-            font-size: 0.88rem;
-            color: #c9d1d9;
-            line-height: 1.4;
-            word-break: break-word;
+        .author-link:hover {
+            text-decoration: underline;
         }
-        .tags-line {
-            margin: 4px 0 0 0;
-            font-size: 0.85rem;
-            color: #58a6ff;
-            word-break: break-word;
+        .item-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #8b949e;
             line-height: 1.4;
         }
-        .tags-line .tag {
-            display: inline-block;
-            margin-right: 4px;
-        }
-        .item-meta {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #30363d;
-            font-size: 0.78rem;
-            color: #6e7681;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .item-footer {
-            margin-top: auto;
-            padding-top: 12px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .like-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #21262d;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.88rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-        .like-btn:hover { background: #30363d; border-color: #58a6ff; }
-        .like-btn.liked {
-            background: rgba(248, 81, 73, 0.15);
-            border-color: #f85149;
-            color: #f85149;
-        }
-        .like-btn .heart { font-size: 1rem; line-height: 1; }
         .lightbox {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(10, 12, 16, 0.95);
             display: flex;
             flex-direction: column;
@@ -195,10 +117,13 @@
             transition: opacity 0.3s ease;
             z-index: 9999;
         }
-        .lightbox.active { opacity: 1; pointer-events: auto; }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
         .lightbox-img {
             max-width: 90%;
-            max-height: 72vh;
+            max-height: 75vh;
             border-radius: 8px;
             box-shadow: 0 0 32px rgba(0,0,0,0.5);
         }
@@ -208,82 +133,45 @@
             max-width: 80%;
         }
         .lightbox-caption h3 {
-            margin: 0 0 6px 0;
+            margin: 0 0 4px 0;
             color: #fff;
-            font-size: 1.15rem;
-            line-height: 1.4;
-            font-weight: 600;
+            font-size: 1.3rem;
         }
-        .lightbox-caption .author-line {
-            font-size: 0.95rem;
-            color: #8b949e;
-        }
-        .lightbox-caption .author-line a { color: #58a6ff; text-decoration: none; }
-        .lightbox-caption .author-line a:hover { text-decoration: underline; }
-        .lightbox-caption .desc {
-            margin: 8px 0 0 0;
-            color: #c9d1d9;
-            font-size: 0.92rem;
-            line-height: 1.45;
-        }
-        .lightbox-caption .tags-line {
-            margin: 8px 0 0 0;
+        .lightbox-caption a {
             color: #58a6ff;
-            font-size: 0.88rem;
+            text-decoration: none;
         }
-        .lightbox-caption .lightbox-meta {
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #6e7681;
+        .lightbox-caption p {
+            margin: 5px 0 0 0;
+            color: #8b949e;
         }
         .close-btn {
             position: absolute;
-            top: 20px; right: 25px;
+            top: 20px;
+            right: 25px;
             color: #fff;
             font-size: 35px;
             cursor: pointer;
             user-select: none;
         }
-        .loader {
-            max-width: 1200px;
-            margin: 40px auto;
-            text-align: center;
-            color: #8b949e;
-            font-size: 1rem;
-        }
-        .loader::after {
-            content: "";
-            display: inline-block;
-            width: 14px; height: 14px;
-            margin-left: 10px;
-            border: 2px solid #58a6ff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .progress {
-            display: block;
-            margin-top: 8px;
-            font-size: 0.85rem;
-            color: #6e7681;
-        }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору, тегам или дате...">
-        <select id="sortSelect" class="sort-select">
-            <option value="newest">Сначала новые</option>
-            <option value="oldest">Сначала старые</option>
-        </select>
+
+
+
+
+
+
+
+
+
+
+    <!-- Поле поиска -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
-
-    <div class="status-bar" id="statusBar"></div>
-
-    <div class="loader" id="loader">Загружаю галерею из GitHub<span class="progress" id="progress"></span></div>
 
     <div class="gallery-grid" id="galleryGrid"></div>
 
@@ -294,408 +182,133 @@
     </div>
 
     <script>
-        /* =========================================================
-         *  КОНФИГУРАЦИЯ — ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА СВОИ
-         * ========================================================= */
-        const CONFIG = {
-            owner: "your-github-username",
-            repo: "your-repo-name",                  // папка с картинками
-            branch: "main",
-            token: "30097f4c2cf7998f0e2476511d2f7d07.jpg",
-
-            // Путь к файлу с ручными метаданными (относительно корня репозитория).
-            // Если файл лежит в корне репо — "arts.json".
-            // Если в папке с картинками — "arts/meta.json".
-            metaFile: "arts.json"
-        };
-
-        /* =========================================================
-         *  УТИЛИТЫ
-         * ========================================================= */
-        function lsGet(key, fallback) {
-            try {
-                const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : fallback;
-            } catch (e) { return fallback; }
-        }
-        function lsSet(key, value) {
-            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-        }
-
-        /* =========================================================
-         *  АНАЛИТИКА
-         * ========================================================= */
-        const SEARCH_LOG_KEY = "search_queries";
-        function logSearch(query) {
-            const q = query.trim().toLowerCase();
-            if (!q) return;
-            const log = lsGet(SEARCH_LOG_KEY, []);
-            log.push({ query: q, timestamp: new Date().toISOString() });
-            if (log.length > 500) log.splice(0, log.length - 500);
-            lsSet(SEARCH_LOG_KEY, log);
-        }
-
-        const LIKES_KEY = "art_likes";
-        const LIKED_KEY = "liked_arts";
-        function getLikes() { return lsGet(LIKES_KEY, {}); }
-        function getLikedSet() { return new Set(lsGet(LIKED_KEY, [])); }
-
-        function handleLike(id, btn) {
-            const likes = getLikes();
-            const liked = getLikedSet();
-            const current = likes[id] || 0;
-            if (liked.has(id)) {
-                likes[id] = Math.max(0, current - 1);
-                liked.delete(id);
-                btn.classList.remove("liked");
-            } else {
-                likes[id] = current + 1;
-                liked.add(id);
-                btn.classList.add("liked");
+        const arts = [
+            {
+                img: "Screenshot_9.png", 
+                title: "Прототип родителей Шарптанг", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8269", 
+                desc: "3 марта 2026 года, 02:14",
+                sortDate: "2026-03-03"
+            },
+            {
+                img: "Screenshot_10.png", 
+                title: "Прототип родителей Прауда", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8268", 
+                desc: "3 марта 2026 года, 01:17",
+                sortDate: "2026-03-03"
+            },
+            {
+                img: "Screenshot_11.png", 
+                title: "Набросок дизайна матери Мунстрайк", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8265", 
+                desc: "3 марта 2026 года, 00:25",
+                sortDate: "2026-03-03"
+            },
+            {
+                img: "Screenshot_13.png", 
+                title: "давно ничего не было с девочками, да и с остальными дамами тот же касяк.. Что-ж, у мальчиков сразу две тёти, одна бабушка и одна прабабушка", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8237", 
+                desc: "#Вотерхантер #Сайленсталк #Лайтхантер, 16 февраля 2026 года, 03:06",
+                sortDate: "2026-02-16"
+            },
+            {
+                img: "Screenshot_15.png",
+                title: '"Моя мать рухлядь которая не способна поймать даже муху" сказал бы сын ничто под влиянием Прауда..если бы Ничто не решилась спасти брата.',
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me",
+                desc: "14 февраля 2026 года, 02:17",
+                sortDate: "2026-02-14"
+            },
+            {
+                img: "Screenshot_16.png", 
+                title: "Если бы...", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8111", 
+                desc: "#Если #Спарк #Файер #Ничто #Перо,14 сентября 2025 года, 07:35",
+                sortDate: "2025-09-14"
+            },
+            {
+                img: "Screenshot_17.png", 
+                title: "Последний разговор между Флайт и Танглом...Тангл не хотел оставлять Фаера пока тот не найдет свой прайд, чего не скажешь о поступке второго...", 
+                authorName: "Star Harlen",
+                authorUrl: "https://t.me/My_pride_2/8070", 
+                desc: "#Тангл #Флайт #Бид,4 августа 2025 года,  20:31",
+                sortDate: "2025-08-04"
+            },
+            {
+                img: "Screenshot_18.png", 
+                title: "—он похож на тебя—у него нет ничего от меня, он просто копия его отца.", 
+                authorName: "Mefoday",
+                authorUrl: "https://t.me/My_pride_2/8089", 
+                desc: "Недавний артец для Леди и ее партнёрши(ее ведь так можно называть?) и мини БаркИ скетч с Дримом в ближайшее время дропну тот аск...#Мать_Баркмейна #Леди,25 августа 2025 года, 02:17",
+                sortDate: "2025-08-25"
             }
-            lsSet(LIKES_KEY, likes);
-            lsSet(LIKED_KEY, [...liked]);
-            btn.querySelector(".like-count").textContent = likes[id];
-        }
+        ];
 
-        const VIEWS_KEY = "art_views";
-        function logArtView(id) {
-            const views = lsGet(VIEWS_KEY, {});
-            views[id] = (views[id] || 0) + 1;
-            lsSet(VIEWS_KEY, views);
-        }
-        window.getTopViewed = function () {
-            const views = lsGet(VIEWS_KEY, {});
-            const likes = getLikes();
-            return Object.keys(views)
-                .map(id => ({ id, views: views[id], likes: likes[id] || 0 }))
-                .sort((a, b) => b.views - a.views);
-        };
-        window.getSearchLog = function () { return lsGet(SEARCH_LOG_KEY, []); };
-
-        /* =========================================================
-         *  GITHUB API
-         * ========================================================= */
-        const COMMIT_CACHE_TTL = 24 * 60 * 60 * 1000;
-        const COMMIT_CACHE_PREFIX = "gh_commit_date_";
-
-        function commitCacheGet(filePath) {
-            const raw = lsGet(COMMIT_CACHE_PREFIX + filePath, null);
-            if (!raw) return null;
-            if (Date.now() - raw.ts > COMMIT_CACHE_TTL) {
-                localStorage.removeItem(COMMIT_CACHE_PREFIX + filePath);
-                return null;
-            }
-            return raw.value;
-        }
-        function commitCacheSet(filePath, value) {
-            lsSet(COMMIT_CACHE_PREFIX + filePath, { ts: Date.now(), value });
-        }
-
-        function ghHeaders() {
-            const h = { "Accept": "application/vnd.github+json" };
-            if (CONFIG.token) h["Authorization"] = `Bearer ${CONFIG.token}`;
-            return h;
-        }
-
-        let apiCallCount = 0;
-        window.getApiCallCount = () => apiCallCount;
-
-        async function ghFetch(url) {
-            apiCallCount++;
-            const res = await fetch(url, { headers: ghHeaders() });
-            if (res.status === 403 || res.status === 429) {
-                const reset = res.headers.get("X-RateLimit-Reset");
-                const resetTime = reset ? new Date(reset * 1000).toLocaleTimeString() : "?";
-                throw new Error(`GitHub API: лимит запросов. Сброс в ${resetTime}. Проверьте токен.`);
-            }
-            if (res.status === 404) {
-                throw new Error("GitHub API: не найдено. Проверьте owner/repo/folder/branch.");
-            }
-            if (!res.ok) throw new Error(`GitHub API: ошибка ${res.status}`);
-            return res.json();
-        }
-
-        async function fetchRepoFiles() {
-            const path = CONFIG.folder ? `/${CONFIG.folder}` : "";
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents${path}?ref=${CONFIG.branch}`;
-            const data = await ghFetch(url);
-            if (!Array.isArray(data)) throw new Error("GitHub API: неожиданный формат ответа.");
-            return data.filter(f =>
-                f.type === "file" &&
-                /\.(png|jpe?g|webp|gif|avif)$/i.test(f.name)
-            );
-        }
-
-        /**
-         * Загружает файл arts.json с ручными метаданными.
-         * Если файла нет — возвращает пустой объект (ничего не сломается).
-         */
-        async function loadMeta() {
-            if (!CONFIG.metaFile) return {};
-            try {
-                const url = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${CONFIG.metaFile}?t=${Date.now()}`;
-                const res = await fetch(url);
-                if (!res.ok) {
-                    console.warn(`[meta] ${CONFIG.metaFile} не найден (${res.status}), работаю без ручных метаданных.`);
-                    return {};
-                }
-                const data = await res.json();
-                return (data && typeof data === "object") ? data : {};
-            } catch (e) {
-                console.warn("[meta] не удалось загрузить arts.json:", e);
-                return {};
-            }
-        }
-
-        /**
-         * Дата ПЕРВОГО коммита для файла — дата загрузки картинки в репозиторий.
-         */
-        async function fetchFirstCommitDate(filePath) {
-            const cached = commitCacheGet(filePath);
-            if (cached) return cached;
-
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/commits?path=${encodeURIComponent(filePath)}&per_page=100&sha=${CONFIG.branch}`;
-            const data = await ghFetch(url);
-            if (!Array.isArray(data) || data.length === 0) return null;
-
-            const oldest = data[data.length - 1];
-            const isoDate = oldest.commit?.author?.date
-                         || oldest.commit?.committer?.date
-                         || null;
-            if (!isoDate) return null;
-
-            const result = {
-                date: isoDate.slice(0, 10),
-                time: isoDate.slice(11, 16),
-                timestamp: new Date(isoDate).getTime(),
-                author: oldest.commit?.author?.name
-                     || oldest.author?.login
-                     || "Unknown"
-            };
-            commitCacheSet(filePath, result);
-            return result;
-        }
-
-        /**
-         * Строит объект арта: ручные метаданные (из arts.json) + дата из коммита.
-         */
-        async function buildArtFromFile(file, meta) {
-            const commitInfo = await fetchFirstCommitDate(file.path);
-            const m = meta[file.name] || {};   // ключ — имя файла, например "Screenshot_13.png"
-
-            const imgUrl = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${file.path}`;
-            const sourceUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${file.path}`;
-
-            // Заголовок: ручной → имя файла без расширения
-            const title = (m.title && String(m.title).trim())
-                       || file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
-
-            // Автор: ручной → из коммита
-            const author = (m.author && String(m.author).trim())
-                        || commitInfo?.author
-                        || "Unknown";
-
-            // Ссылка автора: ручная → ссылка на файл в GitHub
-            const authorUrl = (m.authorUrl && String(m.authorUrl).trim())
-                           || sourceUrl;
-
-            // Описание и теги — только ручные
-            const desc = (m.desc && String(m.desc).trim()) || "";
-            const tags = (m.tags && String(m.tags).trim()) || "";
-
-            return {
-                id: file.path,
-                img: imgUrl,
-                title,
-                authorName: author,
-                authorUrl,
-                desc,
-                tags,
-                date: commitInfo?.date || null,
-                time: commitInfo?.time || "00:00",
-                timestamp: commitInfo?.timestamp || 0,
-                likes: 0
-            };
-        }
-
-        /* =========================================================
-         *  ГАЛЕРЕЯ
-         * ========================================================= */
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-        const statusBar = document.getElementById('statusBar');
-        const loader = document.getElementById('loader');
-        const progress = document.getElementById('progress');
 
-        let allArts = [];
-        let currentArts = [];
+        // === АВТОСОРТИРОВКА ПО ДАТЕ (от новых к старым) ===
+        const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
 
-        function formatDate(dateStr) {
-            if (!dateStr) return "дата неизвестна";
-            const months = [
-                "января", "февраля", "марта", "апреля", "мая", "июня",
-                "июля", "августа", "сентября", "октября", "ноября", "декабря"
-            ];
-            const [y, m, d] = dateStr.split("-").map(Number);
-            if (!y || !m || !d) return dateStr;
-            return `${d} ${months[m - 1]} ${y} года`;
-        }
-
-        function esc(str) {
-            return String(str ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        }
-
-        // Разбивает строку тегов "#a #b #c" в HTML-спан
-        function renderTags(tags) {
-            if (!tags) return "";
-            return tags.split(/\s+/).filter(Boolean)
-                .map(t => `<span class="tag">${esc(t)}</span>`)
-                .join(" ");
-        }
-
-        function renderGallery() {
-            const query = searchInput.value.toLowerCase().trim();
-            const sortOrder = sortSelect.value;
-
-            let filtered = allArts.filter(art => {
-                if (!query) return true;
-                const haystack = [
-                    art.title, art.authorName, art.desc, art.tags,
-                    art.date, art.time, formatDate(art.date)
-                ].join(" ").toLowerCase();
-                return haystack.includes(query);
-            });
-
-            filtered.sort((a, b) => {
-                const diff = b.timestamp - a.timestamp;
-                return sortOrder === "newest" ? diff : -diff;
-            });
-
-            currentArts = filtered;
-            galleryGrid.innerHTML = "";
-
-            const storedLikes = getLikes();
-            const likedSet = getLikedSet();
-
-            filtered.forEach((art, index) => {
-                const totalLikes = storedLikes[art.id] != null ? storedLikes[art.id] : (art.likes || 0);
-                const isLiked = likedSet.has(art.id);
-
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <div class="img-container" onclick="openLightbox(${index})">
-                        <img src="${esc(art.img)}" alt="${esc(art.title)}" loading="lazy">
-                    </div>
-                    <div class="item-info">
-                        <h3>${esc(art.title)}</h3>
-                        <div class="author-line">Автор: <a href="${esc(art.authorUrl)}" target="_blank">${esc(art.authorName)}</a></div>
-                        ${art.desc ? `<p class="desc">${esc(art.desc)}</p>` : ""}
-                        ${art.tags ? `<p class="tags-line">${renderTags(art.tags)}</p>` : ""}
-                        <div class="item-meta">
-                            <span>📅 ${formatDate(art.date)}</span>
-                            <span>🕒 ${art.time}</span>
-                        </div>
-                        <div class="item-footer">
-                            <button class="like-btn ${isLiked ? 'liked' : ''}"
-                                    onclick="handleLike('${esc(art.id)}', this)">
-                                <span class="heart">❤️</span>
-                                <span class="like-count">${totalLikes}</span>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                galleryGrid.appendChild(item);
-            });
-        }
-
-        let searchDebounce = null;
-        searchInput.addEventListener('input', () => {
-            renderGallery();
-            if (searchDebounce) clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(() => {
-                const q = searchInput.value.trim();
-                if (q.length >= 2) logSearch(q);
-            }, 600);
+        // Генерируем карточки уже из отсортированного массива
+        sortedArts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
         });
-        sortSelect.addEventListener('change', renderGallery);
+
+        // Логика фильтрации при вводе в поиск
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const items = galleryGrid.getElementsByClassName('gallery-item');
+
+            sortedArts.forEach((art, index) => {
+                const matchTitle = art.title.toLowerCase().includes(query);
+                const matchAuthor = art.authorName.toLowerCase().includes(query);
+                const matchDesc = art.desc.toLowerCase().includes(query);
+
+                if (matchTitle || matchAuthor || matchDesc) {
+                    items[index].classList.remove('hidden');
+                } else {
+                    items[index].classList.add('hidden');
+                }
+            });
+        });
 
         function openLightbox(index) {
-            const art = currentArts[index];
-            if (!art) return;
-            logArtView(art.id);
+            const art = sortedArts[index];
             lightboxImg.src = art.img;
             lightboxCaption.innerHTML = `
-                <h3>${esc(art.title)}</h3>
-                <div class="author-line">Автор: <a href="${esc(art.authorUrl)}" target="_blank">${esc(art.authorName)}</a></div>
-                ${art.desc ? `<p class="desc">${esc(art.desc)}</p>` : ""}
-                ${art.tags ? `<p class="tags-line">${renderTags(art.tags)}</p>` : ""}
-                <div class="lightbox-meta">📅 ${formatDate(art.date)} &nbsp;|&nbsp; 🕒 ${art.time}</div>
+                <h3>${art.title}</h3>
+                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <p>${art.desc}</p>
             `;
             lightbox.classList.add('active');
         }
+
         function closeLightbox(event) {
             if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
                 lightbox.classList.remove('active');
             }
         }
-
-        /* =========================================================
-         *  ИНИЦИАЛИЗАЦИЯ
-         * ========================================================= */
-        async function init() {
-            try {
-                statusBar.textContent = "Загружаю arts.json...";
-                const meta = await loadMeta();
-
-                statusBar.textContent = "Получаю список файлов из GitHub...";
-                const files = await fetchRepoFiles();
-
-                if (files.length === 0) {
-                    loader.style.display = "none";
-                    statusBar.textContent = "В репозитории нет картинок.";
-                    return;
-                }
-
-                statusBar.textContent = `Найдено файлов: ${files.length}. Загружаю даты коммитов...`;
-
-                const arts = [];
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    progress.textContent = `${i + 1} / ${files.length}`;
-                    try {
-                        const art = await buildArtFromFile(file, meta);
-                        arts.push(art);
-                    } catch (e) {
-                        console.warn("[github] не удалось обработать", file.name, e);
-                    }
-                }
-
-                arts.sort((a, b) => b.timestamp - a.timestamp);
-                allArts = arts;
-
-                loader.style.display = "none";
-                statusBar.textContent = `Загружено артов: ${arts.length} (запросов к API: ${apiCallCount})`;
-                renderGallery();
-            } catch (err) {
-                console.error(err);
-                loader.style.display = "none";
-                statusBar.classList.add("error");
-                statusBar.textContent = "Ошибка: " + err.message;
-            }
-        }
-
-        init();
     </script>
 </body>
 </html>
